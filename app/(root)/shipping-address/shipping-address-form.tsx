@@ -184,8 +184,7 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
                   <Loader className="w-4 h-4 animate-spin" />
                 ) : (
                   <ArrowRight className="w-4 h-4" />
-                )}
-                {""}
+                )}{" "}
                 Continue
               </Button>
             </div>
