@@ -11,7 +11,7 @@ import { hashSync } from "bcrypt-ts-edge";
 import { prisma } from "@/db/prisma";
 import { formatError } from "../utils";
 import { ShippingAddress } from "@/types";
-
+import { getMyCart } from "./cart.actions";
 // Sign in the user with credentials
 export async function signInWithCredentials(
   prevState: unknown,
@@ -37,6 +37,13 @@ export async function signInWithCredentials(
 
 // Sign out the user
 export async function signOutUser() {
+  const currentCart = await getMyCart();
+
+  // 只有当购物车存在时才尝试删除
+  if (currentCart?.id) {
+    await prisma.cart.delete({ where: { id: currentCart.id } });
+  }
+
   await signOut();
 }
 
@@ -73,7 +80,7 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
 
 // Get user by the ID
 export async function getUserById(id: string) {
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: { id: id },
   });
 
@@ -87,7 +94,7 @@ export async function updateUserAddress(data: ShippingAddress) {
   try {
     const session = await auth();
 
-    const currentUser = await prisma.user.findUnique({
+    const currentUser = await prisma.user.findFirst({
       where: { id: session?.user?.id },
     });
 
