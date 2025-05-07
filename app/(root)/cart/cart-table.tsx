@@ -132,8 +132,9 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
                 {isPending ? (
                   <Loader className="h-4 w-4 animate-spin" />
                 ) : (
-                  "Proceed to Checkout"
-                )}
+                  <ArrowRight className="w-4 h-4" />
+                )}{" "}
+                Proceed to Checkout
               </Button>
             </CardContent>
           </Card>
