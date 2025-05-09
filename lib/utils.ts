@@ -68,7 +68,7 @@ export function formatCurrency(value: number | string | null) {
 }
 
 // Shorten UUID
-export function shortenUUID(id: string) {
+export function formatId(id: string) {
   return `..${id.substring(id.length - 6)}`;
 }
 
