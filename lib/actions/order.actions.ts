@@ -1,13 +1,14 @@
 "use server";
 
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { formatError } from "@/lib/utils";
+import { convertToPlainObject, formatError } from "@/lib/utils";
 import { auth } from "@/auth";
 import { getMyCart } from "./cart.actions";
 import { getUserById } from "./user.actions";
 import { insertOrderSchema } from "../validators";
 import { prisma } from "@/db/prisma";
 import { CartItem } from "@/types";
+
 // Create order and create the order items
 export async function createOrder() {
   try {
@@ -94,5 +95,29 @@ export async function createOrder() {
   } catch (error) {
     if (isRedirectError(error)) throw error;
     return { success: false, message: formatError(error) };
+  }
+}
+
+// Get order by id
+export async function getOrderById(orderId: string) {
+  try {
+    // 验证UUID格式 (标准UUID格式: 8-4-4-4-12)
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(orderId)) {
+      return null;
+    }
+
+    const data = await prisma.order.findFirst({
+      where: { id: orderId },
+      include: {
+        orderitems: true,
+        user: { select: { name: true, email: true } },
+      },
+    });
+    return convertToPlainObject(data);
+  } catch (error) {
+    console.error("Error fetching order:", error);
+    return null;
   }
 }
